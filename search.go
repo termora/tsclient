@@ -229,7 +229,7 @@ func (c *Client) Search(collection string, data SearchData) (res SearchResult, e
 
 // SearchResult is the result returned from a search.
 type SearchResult struct {
-	FacetCounts int `json:"facet_counts"`
+	FacetCounts []int `json:"facet_counts"`
 
 	// Number of found documents
 	Found int `json:"found"`
@@ -259,7 +259,7 @@ type Highlight struct {
 
 	Indices []int `json:"indices"`
 
-	MatchedTokens []string `json:"matched_tokens"`
+	MatchedTokens jsonutil.Raw `json:"matched_tokens"`
 
 	// Only present for non-array string fields
 	Snippet string `json:"snippet,omitempty"`

@@ -1,3 +1,4 @@
+// Package tsclient is a client library for the Typesense search engine.
 package tsclient
 
 import (
