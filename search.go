@@ -13,18 +13,21 @@ import (
 type SearchData struct {
 	// The query text to search for in the collection.
 	Query string
-	// One or more string / string[] fields that should be queried against. Separate multiple fields with a comma: company_name, country
+	// One or more string / string[] fields that should be queried against.
 	QueryBy []string
 
 	// The relative weight to give each query_by field when ranking results.
 	// This can be used to boost fields in priority, when looking for matches.
 	QueryByWeights []int
 
-	// If false, indicates that the last word in the query should be treated as a prefix,
+	// If true or missing, indicates that the last word in the query should be treated as a prefix,
 	// and not as a whole word.
 	// This is necessary for building autocomplete and instant search interfaces.
-	// Set this to true to disable prefix searching for all queried fields.
-	NoPrefix bool
+	// Set this to false to disable prefix searching for all queried fields.
+	//
+	// You can also control the behavior of prefix search on a per field basis.
+	// This API is so confusing...
+	Prefix []bool
 
 	// Filter conditions for refining your search results.
 	FilterBy string
@@ -128,10 +131,17 @@ func (c *Client) Search(collection string, data SearchData) (res SearchResult, e
 	v := url.Values{
 		"q":                      {data.Query},
 		"query_by":               {strings.Join(data.QueryBy, ",")},
-		"prefix":                 {strconv.FormatBool(!data.NoPrefix)},
 		"prioritize_exact_match": {strconv.FormatBool(!data.NoPrioritizeExactMatch)},
 		"enable_overrides":       {strconv.FormatBool(!data.DisableOverrides)},
 		"pre_segmented_query":    {strconv.FormatBool(!data.NoPreSegmentedQuery)},
+	}
+
+	if len(data.Prefix) > 0 {
+		s := make([]string, len(data.Prefix))
+		for i, p := range data.Prefix {
+			s[i] = strconv.FormatBool(p)
+		}
+		v["prefix"] = []string{strings.Join(s, ",")}
 	}
 
 	if len(data.QueryByWeights) > 0 {
