@@ -89,7 +89,7 @@ type SearchData struct {
 	SnippetThreshold int
 
 	// Maximum number of typographical errors (0, 1 or 2) that would be tolerated.
-	NumTypos int
+	NumTypos *int
 
 	// If at least typo_tokens_threshold number of results are not found for a specific query,
 	// Typesense will attempt to look for results with more typos until num_typos is reached
@@ -226,6 +226,10 @@ func (c *Client) Search(collection string, data SearchData) (res SearchResult, e
 
 	if data.LimitHits > 0 {
 		v["limit_hits"] = []string{strconv.Itoa(data.LimitHits)}
+	}
+
+	if data.NumTypos != nil {
+		v["num_typos"] = []string{strconv.Itoa(*data.NumTypos)}
 	}
 
 	resp, err := c.Request("GET", "/collections/"+collection+"/documents/search", WithURLValues(v))
