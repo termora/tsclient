@@ -20,6 +20,9 @@ type SearchData struct {
 	// This can be used to boost fields in priority, when looking for matches.
 	QueryByWeights []int
 
+	// Whether to enable infix searching for each field, works the same as QueryByWeights
+	Infix []string
+
 	// If true or missing, indicates that the last word in the query should be treated as a prefix,
 	// and not as a whole word.
 	// This is necessary for building autocomplete and instant search interfaces.
@@ -150,6 +153,10 @@ func (c *Client) Search(collection string, data SearchData) (res SearchResult, e
 			s = append(s, strconv.Itoa(i))
 		}
 		v["query_by_weights"] = []string{strings.Join(s, ",")}
+	}
+
+	if len(data.Infix) > 0 {
+		v["infix"] = []string{strings.Join(data.Infix, ",")}
 	}
 
 	if data.FilterBy != "" {

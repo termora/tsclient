@@ -16,6 +16,7 @@ type Field struct {
 	Type  string `json:"type"`
 	Facet bool   `json:"facet"`
 	Index bool   `json:"index"`
+	Infix bool   `json:"infix"`
 }
 
 // Collection gets a collection by name.
@@ -62,6 +63,7 @@ type CreateFieldData struct {
 	Facet bool
 	// false = index the field, true = don't index the field
 	NoIndex bool
+	Infix   bool
 }
 
 // CreateCollection creates a collection. defaultSortingField is optional and may be left empty.
@@ -73,6 +75,7 @@ func (c *Client) CreateCollection(name, defaultSortingField string, fields []Cre
 			Type:  f.Type,
 			Facet: f.Facet,
 			Index: !f.NoIndex,
+			Infix: f.Infix,
 		})
 	}
 
